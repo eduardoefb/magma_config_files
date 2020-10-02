@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: proxy
+  name: proxy
+spec:
+  ports:
+  - name: "9443"
+    port: 9443
+    targetPort: 9443
+  - name: "9444"
+    port: 9444
+    targetPort: 9444
+  selector:
+    io.kompose.service: proxy
+status:
+  loadBalancer: {}

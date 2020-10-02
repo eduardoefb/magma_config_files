@@ -1,0 +1,9 @@
+[Unit]
+Description=synch_disks service.
+
+[Service]
+Type=simple
+ExecStart=/bin/bash /opt/sync/synch_disks.sh
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.21.0 (992df58d8)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: maria
+  name: maria
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: maria
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.21.0 (992df58d8)
+      creationTimestamp: null
+      labels:
+        io.kompose.service: maria
+    spec:
+      containers:
+      - args:
+        - mysqld
+        - --sql_mode=ANSI_QUOTES
+        env:
+        - name: MYSQL_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: mysql
+              key: MYSQL_DATABASE
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql
+              key: MYSQL_PASSWORD
+
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: mysql
+              key: MYSQL_ROOT_PASSWORD
+        - name: MYSQL_USER
+          valueFrom:
+            secretKeyRef:
+              name: mysql
+              key: MYSQL_USER
+        - name: SQL_MODE
+          value: ANSI_QUOTES
+        image: mariadb:10.2
+        imagePullPolicy: ""
+        name: maria
+        resources: {}
+        volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: mysql
+      restartPolicy: Always
+      serviceAccountName: ""
+      volumes:
+      - name: mysql
+        persistentVolumeClaim:
+          claimName: mysql
+status: {}

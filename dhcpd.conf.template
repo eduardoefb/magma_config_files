@@ -1,0 +1,38 @@
+ddns-update-style interim;
+ignore client-updates;
+authoritative;
+allow booting;
+allow bootp;
+allow unknown-clients;
+
+subnet #NETWORK# netmask #NETMASK# {
+   range #RANGE#;
+   option domain-name-servers #DNS#;
+   option domain-name "pxe.example.com";
+   option routers #GATEWAY#;
+   option broadcast-address #BROADCAST#;
+   default-lease-time 600;
+   max-lease-time 7200;
+   # IP of PXE Server
+   next-server #INSTALLER_IP#;
+   filename "pxelinux.0";
+   
+   group {
+      # MASTER 01
+      host #MASTER_HOSTNAME_01# {
+         hardware ethernet       #MASTER_MAC_01#;
+         fixed-address           #MASTER_NODE_IP01#;
+      }
+      # MASTER 02
+      host #MASTER_HOSTNAME_02# {
+         hardware ethernet       #MASTER_MAC_02#;
+         fixed-address           #MASTER_NODE_IP02#;
+      }
+      # MASTER 03
+      host #MASTER_HOSTNAME_03# {
+         hardware ethernet       #MASTER_MAC_03#;
+         fixed-address           #MASTER_NODE_IP03#;
+      }      
+      # END OF MASTER                        
+   }
+}

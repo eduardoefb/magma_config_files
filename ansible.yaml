@@ -187,7 +187,7 @@
      - name: Configure psql
        shell:
           /usr/pgsql-9.6/bin/postgresql96-setup initdb;
-          echo "listen_addresses = '*'" >> /var/lib/pgsql/9.6/data/postgresql.conf;
+          echo "listen_addresses = '*'" >> /var/lib/pgsql/9.6/data/postgresql.conf;          
           systemctl enable postgresql-9.6;
           systemctl start postgresql-9.6;                
        args:

@@ -178,20 +178,79 @@
           
        args:
           warn: no
-
-   name: Configure master 2 and 3
-   hosts: MASTER02, MASTER03
-   remote_user: root   
-   tasks:     
+     
      - name: Configure psql
        shell:
           /usr/pgsql-9.6/bin/postgresql96-setup initdb;
           echo "listen_addresses = '*'" >> /var/lib/pgsql/9.6/data/postgresql.conf;
+          echo "wal_level = replica" >> /var/lib/pgsql/9.6/data/postgresql.conf;
+          echo "max_wal_senders = 10" >> /var/lib/pgsql/9.6/data/postgresql.conf;
+          echo "hot_standby = on" >> /var/lib/pgsql/9.6/data/postgresql.conf;
+          echo "hot_standby_feedback = on" >> /var/lib/pgsql/9.6/data/postgresql.conf;          
+          echo "host replication postgres #MASTER_NODE_IP01#/32 reject" >> /var/lib/pgsql/9.6/data/pg_hba.conf;
+          echo "host replication postgres 0.0.0.0/0 trust" >> /var/lib/pgsql/9.6/data/pg_hba.conf; 
+          echo "host all all #NETWORK#/#NETMASK_LEN# md5" >> /var/lib/pgsql/9.6/data/pg_hba.conf;
+          echo "standby_mode = on" > /var/lib/pgsql/9.6/data/recovery.conf.pcmk;
+          echo "primary_conninfo = 'host=#MASTER_NODE_IP01# application_name=$(hostname -s)'" >> /var/lib/pgsql/9.6/data/recovery.conf.pcmk;
+          echo "recovery_target_timeline = 'latest'" >> /var/lib/pgsql/9.6/data/recovery.conf.pcmk;
+          chown -r postgres:postgres /var/lib/pgsql/9.6/data/;
           systemctl enable postgresql-9.6;
           systemctl start postgresql-9.6;                
        args:
           warn: no
-                              
+          
+- 
+   name: Configure master 2 and 3
+   hosts: MASTER02, MASTER03
+   remote_user: root   
+   tasks:
+     - name: Pause 30
+       shell:
+          sleep 30
+       args:
+          warn: no
+     
+     - name: Configure master 2 part 1
+       shell:
+          su - postgres -c 'pg_basebackup -h #MASTER_NODE_HIP# -D ~postgres/9.6/data/ -X stream -P'
+       args:
+          warn: no
+
+     - name: Configure master 2 part 2
+       shell:
+          sed -ri s/srv[0-9]+/$(hostname -s)/ /var/lib/pgsql/9.6/data/pg_hba.conf;
+       args:
+          warn: no
+
+     - name: Configure master 2 part 3
+       shell:
+          sed -ri s/srv[0-9]+/$(hostname -s)/ /var/lib/pgsql/9.6/data/recovery.conf.pcmk;
+       args:
+          warn: no
+
+     - name: Configure master 2 part 4
+       shell:
+          cp /var/lib/pgsql/9.6/data/recovery.conf.pcmk /var/lib/pgsql/9.6/data/recovery.conf;
+       args:
+          warn: no
+          
+     - name: Configure master 2 part 5
+       shell:
+          chown -R postgres:postgres /var/lib/pgsql/9.6/data/;
+       args:
+          warn: no
+
+     - name: Configure master 2 part 6
+       shell:
+          systemctl enable postgresql-9.6;
+       args:
+          warn: no
+
+     - name: Configure master 2 part 7
+       shell:
+          systemctl start postgresql-9.6;
+       args:
+          warn: no            
 -
    name: Configure all nodes
    hosts: ALL

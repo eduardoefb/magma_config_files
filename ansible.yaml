@@ -179,6 +179,7 @@
        args:
           warn: no
 
+-
    name: Configure master
    hosts: MASTER
    remote_user: root   

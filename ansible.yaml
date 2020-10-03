@@ -179,8 +179,8 @@
        args:
           warn: no
 
-   name: Configure master 2 and 3
-   hosts: MASTER02, MASTER03
+   name: Configure master
+   hosts: MASTER
    remote_user: root   
    tasks:     
      - name: Configure psql

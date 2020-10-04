@@ -72,7 +72,8 @@
              - bind-utils
              - pcs
              - corosync
-             - pacemaker             
+             - pacemaker
+             - mariadb-server           
              
      - name: Enable rpcbind
        systemd:
@@ -80,6 +81,12 @@
          enabled: yes
          masked: no    
 
+     - name: Enable mariadb
+       systemd:
+         name: mariadb
+         enabled: yes
+         masked: no    
+         
      - name: Enable nfs-server
        systemd:
          name: nfs-server

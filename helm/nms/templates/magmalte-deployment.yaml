@@ -28,6 +28,9 @@ spec:
       - ip: "#PSQL_HA_IP#"
         hostnames:
           - mariadb
+      - ip: "#CONTROLLER_EXTERNAL_IP#"
+        hostnames:
+          - #CONTROLLER_HOSTNAME#          
           
       containers:
       - args:        
@@ -44,7 +47,7 @@ spec:
         - name: API_CERT_FILENAME
           value: /run/secrets/api_cert
         - name: API_HOST
-          value: controller.orc8r.int
+          value: #CONTROLLER_HOSTNAME#
         - name: API_PRIVATE_KEY_FILENAME
           value: /run/secrets/api_key
         - name: HOST
